@@ -8,7 +8,7 @@ import sys
 'Definitions'
 
 
-def spam_start(text="[num]", count=1, enterKey="enter", timeSpace=0):
+def spam_start(rawText="[num]", count=1, enterKey="enter", timeSpace=0):
     if timeSpace < 0:
         print("[ERROR] invalid Syntax: timeSpace under 0")
         sys.exit()
@@ -24,9 +24,7 @@ def spam_start(text="[num]", count=1, enterKey="enter", timeSpace=0):
 
     for numb in range(0, count):
         try:
-            if "[num]" in text:
-                text = text.replace("[num]", str(numb))
-            pag.write(str(text))
+            pag.write(str(rawText.replace("[num]", str(numb + 1))), _pause=False)
 
             pag.press(enterKey)
 
@@ -36,4 +34,4 @@ def spam_start(text="[num]", count=1, enterKey="enter", timeSpace=0):
             sys.exit()
 
 time.sleep(1)
-spam_start(count=10, text="Num: [num]")
+spam_start(count=100, rawText="Num: [num]")
