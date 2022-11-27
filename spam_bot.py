@@ -4,6 +4,8 @@ import pyautogui as pag
 import customtkinter as ctk
 import time
 import sys
+import _thread
+import tkinter
 
 'Definitions'
 
@@ -45,16 +47,41 @@ if __name__ == '__main__':
     frame.pack()
 
     # Variables
-    rText = "[num]"
+    rText = tkinter.StringVar()
     timeDelay = 5
     counter = 1
+
+    # Defs
+    def button_text():
+        time.sleep(1)
+        button1.configure(text="Start in 4 sec.")
+        time.sleep(1)
+        button1.configure(text="Start in 3 sec.")
+        time.sleep(1)
+        button1.configure(text="Start in 2 sec.")
+        time.sleep(1)
+        button1.configure(text="Start in 1 sec.")
+        time.sleep(1)
+        button1.configure(text="Starting")
+        spam_start(rawText=rText.get(), count=1)
+
+    def start():
+        global textEntry, timeSlider, countEntry, keyEntry, button1
+        keyEntry.configure(state="disabled", button_color="#2f2f2f", fg_color="#1f1f1f")
+        timeSlider.configure(state="disabled", button_color="#2f2f2f", progress_color="#1f1f1f")
+        textEntry.configure(state="disabled", text_color="#9f9f9f")
+        countEntry.configure(state="disabled", text_color="#9f9f9f")
+        button1.configure(state="disabled", fg_color="#1F2AA2", text="Start in 5 sec.")
+
+        _thread.start_new_thread(button_text, ())
+
 
     # for Text
     frame1 = ctk.CTkFrame(master=frame, width=680, bg_color="#2f2f2f", height=50)
     frame1.place(x=10, y=10)
 
     textEntry = ctk.CTkEntry(master=frame1, placeholder_text="use '[num]' for counter-output", width=570, height=40,
-                             placeholder_text_color="grey")
+                             placeholder_text_color="grey", text_font=("Calibri", 14), textvariable=rText)
     textEntry.place(x=100, y=5)
 
     lable1 = ctk.CTkLabel(master=frame1, text="Text:", width=60, height=40, text_font=("Calibri", 18))
@@ -84,7 +111,7 @@ if __name__ == '__main__':
     frame3.place(x=10, y=130)
 
     countEntry = ctk.CTkEntry(master=frame3, placeholder_text="how often the message will send", width=570, height=40,
-                              placeholder_text_color="grey")
+                              placeholder_text_color="grey", text_font=("Calibri", 14))
     countEntry.place(x=100, y=5)
 
     lable4 = ctk.CTkLabel(master=frame3, text="Count:", width=60, height=40, text_font=("Calibri", 18))
@@ -105,6 +132,8 @@ if __name__ == '__main__':
     lable5.place(x=10, y=5)
 
     # Button
-    button = ctk.CTkButton(master=frame, width=660, height=50, text="START", text_font=("Calibri", 18)).place(x=20, y=260)
+    button1 = ctk.CTkButton(master=frame, width=660, height=50, text="START",
+                            text_font=("Calibri", 18), command=start)
+    button1.place(x=20, y=260)
 
     main.mainloop()
