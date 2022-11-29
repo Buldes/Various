@@ -6,6 +6,7 @@ import time
 import sys
 import _thread
 import tkinter
+import tkinter.messagebox
 
 'Definitions'
 
@@ -14,8 +15,8 @@ def spam_start(rawText="[num]", count=1, enterKey="enter", timeSpace=0):
     if timeSpace < 0:
         print("[ERROR] invalid Syntax: timeSpace under 0")
         sys.exit()
-    if type(timeSpace) != int:
-        print("[ERROR] invalid Syntax: timeSpace is a", type(timeSpace), " | must be a int")
+    if type(timeSpace) != int and type(timeSpace) != float:
+        print("[ERROR] invalid Syntax: timeSpace is a", type(timeSpace), " | must be a int or float")
         sys.exit()
     if count <= 0:
         print("[ERROR] invalid Syntax: count under 1")
@@ -26,11 +27,11 @@ def spam_start(rawText="[num]", count=1, enterKey="enter", timeSpace=0):
 
     for numb in range(0, count):
         try:
+            time.sleep(timeSpace)
+
             pag.write(str(rawText.replace("[num]", str(numb + 1))), _pause=False)
 
             pag.press(enterKey)
-
-            time.sleep(timeSpace)
         except:
             print("[ERROR] Invalid Syntax: error in text or enterKey")
             sys.exit()
@@ -48,11 +49,13 @@ if __name__ == '__main__':
 
     # Variables
     rText = tkinter.StringVar()
+    cText = tkinter.StringVar()
     timeDelay = 5
     counter = 1
 
     # Defs
     def button_text():
+        global rText, cText, timeSlider, keyEntry, button1, textEntry, countEntry, timeDelay
         time.sleep(1)
         button1.configure(text="Start in 4 sec.")
         time.sleep(1)
@@ -62,8 +65,21 @@ if __name__ == '__main__':
         time.sleep(1)
         button1.configure(text="Start in 1 sec.")
         time.sleep(1)
-        button1.configure(text="Starting")
-        spam_start(rawText=rText.get(), count=1)
+        button1.configure(text="Spamming...")
+
+        try:
+            spam_start(rawText=textEntry.get(), count=int(countEntry.get()), enterKey=keyEntry.get(),
+                       timeSpace=timeDelay)
+        except:
+            tkinter.messagebox.showwarning("Error", "Input Error: check your Entry boxes \n Text: should be a string "
+                                           "\n Count: should be a int")
+
+        keyEntry.configure(state="normal", button_color="#1F6AA5", fg_color="#144870")
+        timeSlider.configure(state="normal", button_color="#1F6AA5", progress_color="#AAB0B5")
+        textEntry.configure(state="normal", text_color="#ffffff")
+        countEntry.configure(state="normal", text_color="#ffffff")
+        button1.configure(state="normal", fg_color="#1F6AA5", text="Start")
+
 
     def start():
         global textEntry, timeSlider, countEntry, keyEntry, button1
@@ -81,7 +97,7 @@ if __name__ == '__main__':
     frame1.place(x=10, y=10)
 
     textEntry = ctk.CTkEntry(master=frame1, placeholder_text="use '[num]' for counter-output", width=570, height=40,
-                             placeholder_text_color="grey", text_font=("Calibri", 14), textvariable=rText)
+                             placeholder_text_color="grey", text_font=("Calibri", 14))
     textEntry.place(x=100, y=5)
 
     lable1 = ctk.CTkLabel(master=frame1, text="Text:", width=60, height=40, text_font=("Calibri", 18))
@@ -121,12 +137,12 @@ if __name__ == '__main__':
     frame4 = ctk.CTkFrame(master=frame, width=680, bg_color="#2f2f2f", height=50)
     frame4.place(x=10, y=190)
 
-    keys = open("key.txt", "r").read().replace("'", "").replace("[", "").replace("]", "").split(",")
+    keys = open("key.txt", "r").read().replace("'", "").replace("[", "").replace("]", "").replace(" ", "").split(",")
 
     keyEntry = ctk.CTkOptionMenu(master=frame4, width=300, height=40, values=keys, text_font=("Calibri", 16),
                                  dynamic_resizing=True)
     keyEntry.place(x=130, y=5)
-    keyEntry.set("entre")
+    keyEntry.set("enter")
 
     lable5 = ctk.CTkLabel(master=frame4, text="Enter Key:", width=60, height=40, text_font=("Calibri", 18))
     lable5.place(x=10, y=5)
