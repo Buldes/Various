@@ -27,9 +27,11 @@ def spam_start(rawText="[num]", count=1, enterKey="enter", timeSpace=0):
 
     for numb in range(0, count):
         try:
-            time.sleep(timeSpace)
+            time.sleep(timeSpace / 2)
 
             pag.write(str(rawText.replace("[num]", str(numb + 1))), _pause=False)
+
+            time.sleep(timeSpace / 2)
 
             pag.press(enterKey)
         except:
