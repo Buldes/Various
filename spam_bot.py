@@ -46,7 +46,7 @@ if __name__ == '__main__':
     main = ctk.CTk()
     main.geometry("700x320")
     main.title("SpamBot")
-    main.iconbitmap('Logo-Kevin256x256.ico')
+    main.iconbitmap('Logo256x256.ico')
 
     frame = ctk.CTkFrame(master=main, width=700, height=320)
     frame.pack()
