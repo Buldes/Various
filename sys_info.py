@@ -23,8 +23,8 @@ def cpu_statistic():
 def memory_statics(to_GB=True, round_num=1):
     memory = psutil.virtual_memory()
     if to_GB:
-        available = round(memory.available / 1024.0 / 1024.0 / 1024.0, round_num)
-        total = round(memory.total / 1024.0 / 1024.0 / 1024.0, round_num)
+        available = round(memory.available / 1000.0 / 1000.0 / 1000.0, round_num)
+        total = round(memory.total / 1000.0 / 1000.0 / 1000.0, round_num)
     else:
         available = round(memory.available, round_num)
         total = round(memory.total, round_num)
@@ -35,8 +35,8 @@ def memory_statics(to_GB=True, round_num=1):
 def disk_statistics(to_GB=True, round_num=1):
     disk = psutil.disk_usage("/")
     if to_GB:
-        free = round(disk.free / 1024.0 / 1024.0 / 1024, round_num)
-        total = round(disk.total / 1024.0 / 1024.0 / 1024, round_num)
+        free = round(disk.free / 1000.0 / 1000.0 / 1000, round_num)
+        total = round(disk.total / 1000.0 / 1000.0 / 1000, round_num)
     else:
         free = round(disk.free, round_num)
         total = round(disk.total, round_num)
