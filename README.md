@@ -35,7 +35,7 @@ You will find these following things:
 + _Text_ - Entry
 + _Time delay_ - Slider 
 + _Count_ - Entry
-+ _Enter Key_ - Option Menu
++ _Enter Key_ - Button
 
 This is what they do:
 + _Text_: This is the text, that will write. You can use `[num]` for the _counter_ output.
