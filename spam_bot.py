@@ -7,6 +7,7 @@ import sys
 import _thread
 import tkinter
 import tkinter.messagebox
+import keyboard
 
 'Definitions'
 
@@ -56,10 +57,12 @@ if __name__ == '__main__':
     cText = tkinter.StringVar()
     timeDelay = 5
     counter = 1
+    enterKey = "enter"
 
-    # Defs
+
+    # dfinitions
     def button_text():
-        global rText, cText, timeSlider, keyEntry, button1, textEntry, countEntry, timeDelay
+        global rText, cText, timeSlider, newKeyButon, button1, textEntry, countEntry, timeDelay, enterKey
         time.sleep(1)
         button1.configure(text="Start in 4 sec.")
         time.sleep(1)
@@ -72,46 +75,67 @@ if __name__ == '__main__':
         button1.configure(text="Spamming...")
 
         try:
-            spam_start(rawText=textEntry.get(), count=int(countEntry.get()), enterKey=keyEntry.get(),
+            spam_start(rawText=textEntry.get(), count=int(countEntry.get()), enterKey=enterKey,
                        timeSpace=timeDelay)
         except:
             tkinter.messagebox.showwarning("Error", "Input Error: check your Entry boxes \n Text: should be a string "
-                                           "\n Count: should be a int")
+                                                    "\n Count: should be a int")
 
-        keyEntry.configure(state="normal", button_color="#1F6AA5", fg_color="#144870")
+        EnableButton()
+
+    def EnableButton():
+        newKeyButon.configure(state="normal", fg_color="#1F6AA5", text=f"Current Key: <{enterKey}>")
         timeSlider.configure(state="normal", button_color="#1F6AA5", progress_color="#AAB0B5")
         textEntry.configure(state="normal", text_color="#ffffff")
         countEntry.configure(state="normal", text_color="#ffffff")
         button1.configure(state="normal", fg_color="#1F6AA5", text="Start")
 
-
-    def start():
-        global textEntry, timeSlider, countEntry, keyEntry, button1
-        keyEntry.configure(state="disabled", button_color="#2f2f2f", fg_color="#1f1f1f")
+    def DisableButton():
+        global textEntry, timeSlider, countEntry, button1, newKeyButon
+        newKeyButon.configure(state="disabled", fg_color="#1F2AA2", text="[Loading...]")
         timeSlider.configure(state="disabled", button_color="#2f2f2f", progress_color="#1f1f1f")
         textEntry.configure(state="disabled", text_color="#9f9f9f")
         countEntry.configure(state="disabled", text_color="#9f9f9f")
-        button1.configure(state="disabled", fg_color="#1F2AA2", text="Start in 5 sec.")
+        button1.configure(state="disabled", fg_color="#1F2AA2", text="[Loading...]")
 
+
+    def start():
+        global enterKey
+        DisableButton()
+        button1.configure(text="Start in 5 sec.")
+        newKeyButon.configure(text=f"Pressing <{enterKey}> after every message.")
         _thread.start_new_thread(button_text, ())
 
+
+    def ReadKeyboardInput():
+        global newKeyButon, button1, enterKey
+        DisableButton()
+        button1.configure(text="Can't start. Waiting for Keyboard input")
+        newKeyButon.configure(text="Waiting for Keyboard input. Press any key you want to.")
+        _thread.start_new_thread(ReadKeyboardInputThread, ())
+
+    def ReadKeyboardInputThread():
+        global enterKey
+        enterKey = keyboard.read_event(suppress=True).name
+        EnableButton()
 
     # for Text
     frame1 = ctk.CTkFrame(master=frame, width=680, bg_color="#2f2f2f", height=50)
     frame1.place(x=10, y=10)
 
     textEntry = ctk.CTkEntry(master=frame1, placeholder_text="use '[num]' for counter-output", width=570, height=40,
-                             placeholder_text_color="grey", text_font=("Calibri", 14))
+                             placeholder_text_color="grey")  # , text_font=("Calibri", 14)
     textEntry.place(x=100, y=5)
 
-    lable1 = ctk.CTkLabel(master=frame1, text="Text:", width=60, height=40, text_font=("Calibri", 18))
+    lable1 = ctk.CTkLabel(master=frame1, text="Text:", width=60, height=40)  # , text_font=("Calibri", 18)
     lable1.place(x=10, y=5)
+
 
     # for Time delay
     def time_delay(event):
         global timeDelay
-        lable3.configure(text=str(round(event, 1)) + " sec.")
-        timeDelay = round(event, 1)
+        lable3.configure(text=str(round(event, 2)) + " sec.")
+        timeDelay = round(event, 2)
 
 
     frame2 = ctk.CTkFrame(master=frame, width=680, bg_color="#2f2f2f", height=50)
@@ -120,10 +144,10 @@ if __name__ == '__main__':
     timeSlider = ctk.CTkSlider(master=frame2, width=450, from_=0, to=10, command=time_delay)
     timeSlider.place(x=130, y=20)
 
-    lable2 = ctk.CTkLabel(master=frame2, text="Time delay:", width=60, height=40, text_font=("Calibri", 18))
+    lable2 = ctk.CTkLabel(master=frame2, text="Time delay:", width=60, height=40)  # , text_font=("Calibri", 18)
     lable2.place(x=10, y=5)
 
-    lable3 = ctk.CTkLabel(master=frame2, text="5.0 sec.", width=60, height=40, text_font=("Calibri", 16))
+    lable3 = ctk.CTkLabel(master=frame2, text="5.00 sec.", width=60, height=40)  # , text_font=("Calibri", 16)
     lable3.place(x=600, y=5)
 
     # for counter
@@ -131,29 +155,28 @@ if __name__ == '__main__':
     frame3.place(x=10, y=130)
 
     countEntry = ctk.CTkEntry(master=frame3, placeholder_text="how often the message will send", width=570, height=40,
-                              placeholder_text_color="grey", text_font=("Calibri", 14))
+                              placeholder_text_color="grey")  # , text_font=("Calibri", 14)
     countEntry.place(x=100, y=5)
 
-    lable4 = ctk.CTkLabel(master=frame3, text="Count:", width=60, height=40, text_font=("Calibri", 18))
+    lable4 = ctk.CTkLabel(master=frame3, text="Count:", width=60, height=40)  # , text_font=("Calibri", 18)
     lable4.place(x=10, y=5)
 
     # for enterKey
     frame4 = ctk.CTkFrame(master=frame, width=680, bg_color="#2f2f2f", height=50)
     frame4.place(x=10, y=190)
 
-    keys = open("key.txt", "r").read().replace("'", "").replace("[", "").replace("]", "").replace(" ", "").split(",")
+    # keys = open("key.txt", "r").read().replace("'", "").replace("[", "").replace("]", "").replace(" ", "").split(",")
 
-    keyEntry = ctk.CTkOptionMenu(master=frame4, width=300, height=40, values=keys, text_font=("Calibri", 16),
-                                 dynamic_resizing=True)
-    keyEntry.place(x=130, y=5)
-    keyEntry.set("enter")
+    newKeyButon = ctk.CTkButton(master=frame4, command=ReadKeyboardInput, width=570, height=40,
+                                text=f"Current Key: <{enterKey}>")
+    newKeyButon.place(x=100, y=5)
 
-    lable5 = ctk.CTkLabel(master=frame4, text="Enter Key:", width=60, height=40, text_font=("Calibri", 18))
+    lable5 = ctk.CTkLabel(master=frame4, text="Enter Key:", width=60, height=40)  # , text_font=("Calibri", 18)
     lable5.place(x=10, y=5)
 
     # Button
     button1 = ctk.CTkButton(master=frame, width=660, height=50, text="START",
-                            text_font=("Calibri", 18), command=start)
+                            command=start)  # , text_font=("Calibri", 18)
     button1.place(x=20, y=260)
 
     main.mainloop()
