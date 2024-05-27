@@ -2,29 +2,29 @@
 'Imports'
 import psutil
 import os
+import subprocess
 
 'Definitions'
 
 
 # CPU
-def cpu_statistic():
+def get_cpu():
     if os.name == "posix":
         cpu_temp_every = str(psutil.sensors_temperatures())
-        cpu_temp = cpu_temp_every[42] + cpu_temp_every[43] + cpu_temp_every[44] + cpu_temp_every[45] + \
-                   cpu_temp_every[46]
+        cpu_temp = cpu_temp_every[42:47]
         cpu_usage = str(psutil.cpu_percent())
-        return cpu_usage, cpu_temp
+        return cpu_usage, cpu_temp.replace("=", "")
     else:
         cpu_usage = str(psutil.cpu_percent())
         return cpu_usage
 
 
-# Memory
-def memory_statics(to_GB=True, round_num=1):
+# Memory/Ram
+def get_memory(to_GB=True, round_num=1):
     memory = psutil.virtual_memory()
     if to_GB:
-        available = round(memory.available / 1000.0 / 1000.0 / 1000.0, round_num)
-        total = round(memory.total / 1000.0 / 1000.0 / 1000.0, round_num)
+        available = round(memory.available / 1000.0**3, round_num)
+        total = round(memory.total / 1000.0**3, round_num)
     else:
         available = round(memory.available, round_num)
         total = round(memory.total, round_num)
@@ -32,7 +32,7 @@ def memory_statics(to_GB=True, round_num=1):
 
 
 # disk
-def disk_statistics(to_GB=True, round_num=1):
+def get_disk(to_GB=True, round_num=1):
     disk = psutil.disk_usage("/")
     if to_GB:
         free = round(disk.free / 1000.0 / 1000.0 / 1000, round_num)
@@ -42,6 +42,8 @@ def disk_statistics(to_GB=True, round_num=1):
         total = round(disk.total, round_num)
     return free, total
 
+def get_voltage():
+    return subprocess.run(["sudo", "vcgencmd", "measure_volts"], capture_output=True).stdout.decode()[5:9]
 
 def info():
     print("************************************** \n"
@@ -54,8 +56,11 @@ def info():
           "   return list (available, total)\n"
           "    of memory\n"
           "\n"
-          "cpu_statistic():\n"
+          "get_cpu():\n"
           "   return list (usage in %, temperature)\n"
+          "\n"
+          "get_voltage():\n"
+          "    return value of current voltage of the system (fr rasppbery)"
           "\n"
           "to_GB:\n"
           "   converts to GB\n"
@@ -81,11 +86,11 @@ if __name__ == '__main__':
         def config():
             while 1:
                 time.sleep(0.5)
-                cpu_lable.configure(text="CPU: " + str(cpu_statistic()) + "%")
+                cpu_lable.configure(text="CPU: " + str(get_cpu()) + "%")
                 memory.configure(
-                    text="MEMORY: " + str(round(memory_statics()[0], 1)) + " / " + str(
-                        memory_statics()[1]) + "GB")
-                disk.configure(text="DISK: " + str(disk_statistics()[0]) + " / " + str(disk_statistics()[1]) + "GB")
+                    text="MEMORY: " + str(round(get_memory()[0], 1)) + " / " + str(
+                        get_memory()[1]) + "GB")
+                disk.configure(text="DISK: " + str(get_disk()[0]) + " / " + str(get_disk()[1]) + "GB")
 
 
         # Lable
@@ -115,9 +120,10 @@ if __name__ == '__main__':
         time.sleep(0.5)
         while True:
             print("---------sys_info---------")
-            print("cpu_usage:", cpu_statistic()[0], "%")
-            print("cpu_temp:", cpu_statistic()[1], "°C")
-            print("memory:" + str(memory_statics()[0]) + "/" + str(memory_statics()[1]))
-            print("disk:" + str(disk_statistics()[0]) + "/" + str(disk_statistics()[1]))
+            print("cpu_usage:", get_cpu()[0], "%")
+            print("cpu_temp:", get_cpu()[1], "°C")
+            print("memory:" + str(get_memory()[0]) + "/" + str(get_memory()[1]))
+            print("disk:" + str(get_disk()[0]) + "/" + str(get_disk()[1]))
+            print("voltage:" + str(get_voltage()) + "V")
             print("--------------------------")
             time.sleep(1)
